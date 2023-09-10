@@ -1,4 +1,4 @@
-Code for the paper WikiMed-DE: Constructing a Silver-Standard Dataset for German Biomedical Entity Linking using Wikipedia and Wikidata, 2023, Yi Wang, Corina Dima, Steffen Staab, Wikidata workshop
+Code for the paper **[WikiMed-DE: Constructing a Silver-Standard Dataset for German Biomedical Entity Linking using Wikipedia and Wikidata, 2023, Yi Wang, Corina Dima, Steffen Staab, Wikidata workshop](https://openreview.net/forum?id=5dQ7YDSYya)**
 
 ---
 
