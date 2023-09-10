@@ -139,7 +139,7 @@ python -m wikiextractor.WikiExtractor dewiki-20230620-pages-articles-multistream
 
 ```
 After using WikiExtractor, we obtain a directory named "multistream". This directory comprises numerous subfolders, each of which contains approximately 100 TXT files. Each TXT file has several JSON lines.
-3. Running **[extracted_data_to_json.py]()**, which convert the files in multistream to a JSON file named multistream.json.
+3. Running **[extracted_data_to_json.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/extracted_data_to_json.py)**, which convert the files in multistream to a JSON file named multistream.json.
 
 Step 2 - Preprocessing
 1. Running the following SPARQL query on  the **[Official Wikidata SPARQL endpoint](https://query.wikidata.org/)**. The results are stored under the title wikidata_CUI.csv, wikidata_MeSH_ID.csv and wikidata_DOID.csv
@@ -165,13 +165,13 @@ Step 2 - Preprocessing
     
 ```
 
-2. **[preprocessing/wiki_id_to_qid.py]()** 
+2. **[preprocessing/wiki_id_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/preprocessing/wiki_id_to_qid.py)** 
 	* Goal: convert the Wikipedia page ID to QID that can be used to extract Wididata properties. 
 	* To run this code, we need:
 		* the German Wikipedia page property file dewiki-20230620-page_props.sql.gz downloaded from **[German Wikipedia dump](https://dumps.wikimedia.org/dewiki/20230620/)**
 	* Output: wiki_id_qid.csv
 
-3. **[preprocessing/CUI_TUI.py]()**  
+3. **[preprocessing/CUI_TUI.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/preprocessing/CUI_TUI.py)**  
 	* Goal: map UMLS CUI with TUI. 
 	* To run this code, we need:
 		* **[MRSTY.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**. 
@@ -179,7 +179,7 @@ Step 2 - Preprocessing
 	* Outputs: 
 		* cui_tui_csv 
 		* qid_cui_tui.csv
-4.  **[preprocessing/mesh_cui.py]()** 
+4.  **[preprocessing/mesh_cui.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/preprocessing/mesh_cui.py)** 
 	* Goal: map MeSH ID with UMLS CUI. 
 	* To run this code, we need:
 		* **[MRCONSO.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**.
@@ -190,7 +190,7 @@ Step 2 - Preprocessing
 		* mesh_cui_tui.csv
 		* qid_mesh.csv
 
-5. **[preprocessing/DOID_CUI.py]()** 
+5. **[preprocessing/DOID_CUI.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/preprocessing/DOID_CUI.py)** 
 	* Goal: map DOID with UMLS CUI. 
 	* To run this code, we need:
 		* **[ doid.json](https://github.com/DiseaseOntology/HumanDiseaseOntology/blob/main/src/ontology/releases/doid.json)** 
@@ -202,7 +202,7 @@ Step 2 - Preprocessing
 		* qid_doid.csv
 
 Step 3 - Filtering Wikipedia Articles
-1. **[generate_initial_data.py]()**
+1. **[generate_initial_data.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/generate_initial_data.py)**
 	* Goal: filter the German Wikipedia articles which contains either UMLS CUI, MeSH ID or DOID.
 	* To run this code, we need:
 		* multistream.json
@@ -213,7 +213,7 @@ Step 3 - Filtering Wikipedia Articles
 	* Outputs:
 		* multistream_only_cui_mesh_doid.json
 
-2. **[filtering_initial_data.py]()** 
+2. **[filtering_initial_data.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/filtering_initial_data.py)** 
 	* Goal: filter out the Wikipedia articles without any mention (without HTML tags)
 	* To run this code, we need:
 		* multistream_only_cui_mesh_doid.json
@@ -221,7 +221,7 @@ Step 3 - Filtering Wikipedia Articles
 		* multistream_text.json
 
 Step 4 - Mapping Mentions to Wikidata
-1. **[save_mentions.py]()** 
+1. **[save_mentions.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/save_mentions.py)** 
 	* Goal: save all mentions appearing in German Wikipedia articles and map mention URL with Wikipedia page ID
 	* To run this code, we need:
 		* multistream_text.json
@@ -229,14 +229,14 @@ Step 4 - Mapping Mentions to Wikidata
 		* mention.csv
 		* mention_url.csv
 
-2. **[mentions_to_qid.py]()** 
+2. **[mentions_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/mentions_to_qid.py)** 
 	* Goal: map mention URL with QID
 	* To run this code, we need:
 		* mention_url.csv
 		* wiki_id_qid.csv
 	* Outputs:
 		* mentions_qids.csv
-3. **[redirect_mention_urls.py]()** 
+3. **[redirect_mention_urls.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/redirect_mention_urls.py)** 
 	* Goal: redirect the URLs to new page ID
 	* To run this code, we need:
 		* mention_url.csv
@@ -245,7 +245,7 @@ Step 4 - Mapping Mentions to Wikidata
 		* mentions_url_including_redirect.csv
 
 Step 5 - Integrating all information
-1. **[generate_Wikimedde.ipynb]()** 
+1. **[generate_Wikimedde.ipynb](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/generate_Wikimedde.ipynb)** 
 	* To run this code, we need:
 		* multistream_text.json
 		* wiki_id_qid.csv
