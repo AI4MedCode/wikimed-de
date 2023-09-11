@@ -25,6 +25,7 @@ output_path = os.path.join(current_directory, 'outputs')
 with open(os.path.join(output_path, 'multistream_text.json'), 'r', encoding='utf-8') as jsonf:
   jsondata = json.load(jsonf)
 
+# Compile regular expressions
 link_pattern = re.compile(r'<a.*?>(.*?)</a>')
 # Initialize the list to store all urls
 urls_list = []
@@ -84,6 +85,5 @@ results = fetch_data_concurrently(urls)
 rows = []
 for url, page_id, error in results:
     rows.append([url, page_id, error])
-df1 = pd.DataFrame(rows, columns=['url', 'page id', 'error'])
-merged_df = pd.merge(df1, df, on='url', how='left')
-merged_df.to_csv(os.path.join(output_path, 'mention_url.csv'), index=False)
+df = pd.DataFrame(rows, columns=['url', 'page id', 'error'])
+df.to_csv(os.path.join(output_path, 'mention_url.csv'), index=False)
