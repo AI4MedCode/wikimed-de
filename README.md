@@ -146,11 +146,11 @@ WikiMed-DE version 1.0 uses the wikidata dumps from 20.06.2023 and the UMLS vers
 
 #### Part A - Obtain the German Wikipedia articles:
 
-1. Download the German Wikipedia articles `dewiki-20230620-pages-articles-multistream.xml.bz2` from the **[German Wikipedia dumps](https://dumps.wikimedia.org/dewiki/20230620/)**.
+1. Download the German Wikipedia articles `dewiki-20230620-pages-articles-multistream.xml.bz2` from the **[German Wikipedia dumps](https://dumps.wikimedia.org/dewiki/20230620/)** and place it in the `data` directory.
 
 2. Install **[WikiExtractor](https://github.com/attardi/wikiextractor)** using `pip`, then use it to extract the clean text from the archive downloaded at step 1. Run the command line: 
 
-```
+```python
 python -m wikiextractor.WikiExtractor dewiki-20230620-pages-articles-multistream.xml.bz2 --json -l
 ```
 
@@ -159,12 +159,16 @@ On a typical machine the extraction is relatively fast, and it should take less 
 
 The result of the above command line is a directory named `text`. This directory comprises numerous subfolders, each containing approximately 100 files. Each file has several JSON lines.
 
-3. Run **[extracted_data_to_json.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/extracted_data_to_json.py)**, which converts the files in the `text` directory to a JSON file named `multistream.json`.
+3. Run **[extracted_data_to_json.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/extracted_data_to_json.py)**, which converts the files in the `text` directory to a JSON file named `multistream.json`, which will be saved under the `outputs` directory.
+
+```python
+python code/extracted_data_to_json.py
+```
 
 ---
 #### Part B - Preprocessing
 
-1. Run the following SPARQL queries on  the **[official Wikidata SPARQL endpoint](https://query.wikidata.org/)**. Store the results as `wikidata_CUI.csv`, `wikidata_MeSH_ID.csv` and `wikidata_DOID.csv`.
+1. Run the following SPARQL queries on  the **[official Wikidata SPARQL endpoint](https://query.wikidata.org/)**. Store the results as `wikidata_CUI.csv`, `wikidata_MeSH_ID.csv` and `wikidata_DOID.csv` under the `data` directory.
 
 ```
     SELECT ?entity ?CUI
@@ -188,21 +192,28 @@ The result of the above command line is a directory named `text`. This directory
     
 ```
 
-Given that this step queries the current version of Wikidata, the results might differ from the ones we reported in our paper. In general, however, if the number of extracted IDs is higher, the quality of the dataset will be better.  
+Given that this step queries the current version of Wikidata, the results might differ from the ones we reported in our paper. In general, however, if the number of extracted IDs is higher, the quality of the dataset will be better.
+For reproducibility, we provide the results of these queries use to generate the dataset described in the paper in the `data` directory.  
 
 2. Run the script **[preprocessing/wiki_id_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/wiki_id_to_qid.py)** 
 	* Goal: map the Wikipedia page IDs to Wikidata QIDs. 
-	* To run this code we need the German Wikipedia page props file `dewiki-20230620-page_props.sql.gz` downloaded from the **[German Wikipedia dump](https://dumps.wikimedia.org/dewiki/20230620/)**.
+	* To run this code we need the German Wikipedia page props file `dewiki-20230620-page_props.sql.gz` downloaded from the **[German Wikipedia dump](https://dumps.wikimedia.org/dewiki/20230620/)**. Please place this file in the `data` directory.
 	* Output: wiki_id_qid.csv
+
+  ```python
+  python code/preprocessing/wiki_id_to_qid.py
+  ```
 
 3. Run the script **[preprocessing/CUI_TUI.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/CUI_TUI.py)**  
 	* Goal: map UMLS CUIs to their corresponding TUIs. 
 	* To run this code, we need:
-		* **[MRSTY.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**. 
+		* **[MRSTY.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**. Place this file in the `data` directory, under `2023AA/META/`.
 		* wikidata_CUI.csv (obtained in step B1)
 	* Outputs: 
 		* cui_tui_csv 
 		* qid_cui_tui.csv
+
+If you use another UMLS release, please update the code and the file paths accordingly.
 
 4. Run the script **[preprocessing/mesh_cui.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/mesh_cui.py)** 
 	* Goal: map MeSH IDs with UMLS CUIs. 

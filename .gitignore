@@ -1,3 +1,9 @@
+data/text/*
+data/dewiki*
+data/2023AA/*
+outputs/*
+.python-version
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

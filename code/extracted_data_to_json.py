@@ -18,6 +18,9 @@ current_directory = os.getcwd().replace('code', '')
 data_path = os.path.join(current_directory, 'data')
 output_path = os.path.join(current_directory, 'outputs')
 
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+
 text_path = os.path.join(data_path, 'text')
 
 folders = [os.path.join(text_path, f) for f in os.listdir(text_path) if '.' not in f]
