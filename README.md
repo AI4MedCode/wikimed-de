@@ -2,12 +2,11 @@ Code for the paper:
 
 [WikiMed-DE: Constructing a Silver-Standard Dataset for German Biomedical Entity Linking using Wikipedia and Wikidata](https://openreview.net/forum?id=5dQ7YDSYya). 2023. Yi Wang, Corina Dima, Steffen Staab. Wikidata workshop @ ISWC 2023.
 
-WikiMed-DE is a silver standard German biomedical entity linking dataset. It was created automatically by connecting the links in German Wikipedia articles to Wikidata. 
+WikiMed-DE is a silver standard German biomedical entity linking dataset. It was created automatically by connecting the links in German Wikipedia articles to Wikidata and through Wikidata to the Unified Medical Language System (UMLS), the Medical Subject Headings (MeSH) and the Disease Ontology (DO). 
 
-Every sample in WikiMed-DE contains a unique Wikipedia page id and the corresponding url, title and text as well as structured information mapped from Wikidata, namely the QID, the UMLS CUI, the UMLS TUI, and the UMLS semantic type, the MeSH ID and the DOID. 
+Every sample in WikiMed-DE is associated to its unique Wikipedia page ID and the corresponding url, title and text as well as structured information mapped from Wikidata, namely the QID, the UMLS CUI, the UMLS TUI, the UMLS semantic type, the MeSH ID and the DOID. 
 
 In WikiMed-DE, we extract every hyperlinked text span in Wikipedia articles as a mention. Each mention in WikiMed-DE features its surface form, its title, the start and end indices and the structured information mapped from Wikidata. More details can be found in the paper linked above.
-
   
 WikiMed-DE is provided in a JSON format, one document per line. Here is a sample annotated article:
 
@@ -149,16 +148,18 @@ WikiMed-DE version 1.0 uses the wikidata dumps from 20.06.2023 and the UMLS vers
 
 1. Download the German Wikipedia articles `dewiki-20230620-pages-articles-multistream.xml.bz2` from the **[German Wikipedia dumps](https://dumps.wikimedia.org/dewiki/20230620/)**.
 
-2. Use **[WikiExtractor](https://github.com/attardi/wikiextractor)** to extract the clean text from the archive downloaded at step 1. Run the command line: 
+2. Install **[WikiExtractor](https://github.com/attardi/wikiextractor)** using `pip`, then use it to extract the clean text from the archive downloaded at step 1. Run the command line: 
 
 ```
 python -m wikiextractor.WikiExtractor dewiki-20230620-pages-articles-multistream.xml.bz2 --json -l
 ```
 
-The result of the above command line is a directory named `multistream`. This directory comprises numerous subfolders, each containing approximately 100 `.txt` files. Each `.txt` file has several JSON lines.
-This step might take several hours, depending on your machine.
+Important! The command line above will also work with the repository-version of WikiExtractor. However, it will produce errors regarding MediaWiki templates, and the extraction will last much longer.
+On a typical machine the extraction is relatively fast, and it should take less than 30 minutes.
 
-3. Run **[extracted_data_to_json.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/extracted_data_to_json.py)**, which converts the `.txt` files in the `multistream` directory to a JSON file named `multistream.json`.
+The result of the above command line is a directory named `text`. This directory comprises numerous subfolders, each containing approximately 100 files. Each file has several JSON lines.
+
+3. Run **[extracted_data_to_json.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/extracted_data_to_json.py)**, which converts the files in the `text` directory to a JSON file named `multistream.json`.
 
 ---
 #### Part B - Preprocessing
@@ -186,6 +187,8 @@ This step might take several hours, depending on your machine.
     }
     
 ```
+
+Given that this step queries the current version of Wikidata, the results might differ from the ones we reported in our paper. In general, however, if the number of extracted IDs is higher, the quality of the dataset will be better.  
 
 2. Run the script **[preprocessing/wiki_id_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/camera_ready/code/preprocessing/wiki_id_to_qid.py)** 
 	* Goal: map the Wikipedia page IDs to Wikidata QIDs. 
