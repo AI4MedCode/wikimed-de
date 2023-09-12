@@ -131,7 +131,7 @@ WikiMed-DE is provided in a JSON format, one document per line. Here is a sample
 
 ### Prerequisites
 
-The code is written in [Python](https://www.python.org) and was tested on Python version 3.8.2.
+The code is written in [Python](https://www.python.org) and was tested on Python version 3.8.2 and 3.10.9.
 
 You will need enough space on your machine, given that both the Wikidata archives and the UMLS distribution contain large files.
 
