@@ -130,7 +130,9 @@ WikiMed-DE is provided in a JSON format, one document per line. Here is a sample
 
 ### Prerequisites
 
-The code is written in [Python](https://www.python.org) and was tested on Python version 3.8.2.
+The code is written in [Python](https://www.python.org) and was tested on Python version 3.8.2. 
+
+Use `pip install -r requirements.txt` to install the required packages.
 
 You will need enough space on your machine, given that both the Wikidata archives and the UMLS distribution contain large files.
 
@@ -213,12 +215,16 @@ For reproducibility, we provide the results of these queries use to generate the
 		* cui_tui_csv 
 		* qid_cui_tui.csv
 
-If you use another UMLS release, please update the code and the file paths accordingly.
+```python
+  python code/preprocessing/CUI_TUI.py
+  ```
+
+If you use another UMLS release, please update the file paths accordingly.
 
 4. Run the script **[preprocessing/mesh_cui.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/mesh_cui.py)** 
 	* Goal: map MeSH IDs with UMLS CUIs. 
 	* To run this code, we need:
-		* **[MRCONSO.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**.
+		* **[MRCONSO.RRF]()** downloaded from **[ umls-2023AA-mrconso.zip](https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html)**. Place this file in the `data` directory, under `2023AA/META/`.
 		* cui_tui.csv (obtained in step B3)
 		* wikidata_MeSH_ID.csv (obtained in step B1)
 	* Outputs:
@@ -226,10 +232,14 @@ If you use another UMLS release, please update the code and the file paths accor
 		* mesh_cui_tui.csv
 		* qid_mesh.csv
 
+```python
+  python code/preprocessing/mesh_cui.py
+  ```
+
 5. Run the script **[preprocessing/DOID_CUI.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/DOID_CUI.py)** 
 	* Goal: map DOIDs to UMLS CUIs. 
 	* To run this code, we need:
-		* **[doid.json](https://github.com/DiseaseOntology/HumanDiseaseOntology/blob/main/src/ontology/releases/doid.json)** 
+		* **[doid.json](https://github.com/DiseaseOntology/HumanDiseaseOntology/blob/main/src/ontology/releases/doid.json)**. Place this file in the `data` directory. We used the release June 2023 for generating the dataset.
 		* wikidata_DOID.csv (obtained in step B1)
 		* cui_tui.csv (obtained in step B3)
 	* Outputs:
@@ -237,6 +247,9 @@ If you use another UMLS release, please update the code and the file paths accor
 		* doid_cui_tui.csv.
 		* qid_doid.csv
 
+```python
+  python code/preprocessing/DOID_CUI.py
+```
 ---
 
 #### Part C - Filter Wikipedia articles
@@ -252,12 +265,20 @@ If you use another UMLS release, please update the code and the file paths accor
 	* Outputs:
 		* multistream_only_cui_mesh_doid.json
 
+```python
+  python code/generate_initial_data.py
+```
+
 2. Run the script **[filtering_initial_data.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/filtering_initial_data.py)** 
 	* Goal: filters out the Wikipedia articles without any mention (without HTML tags)
 	* To run this code, we need:
 		* multistream_only_cui_mesh_doid.json (obtain in step C1)
 	* Outputs:
 		* multistream_text.json
+
+```python
+  python code/filtering_initial_data.py
+```
 
 --- 
 #### Part D - Map mentions to Wikidata
@@ -270,6 +291,12 @@ If you use another UMLS release, please update the code and the file paths accor
 		* mention.csv
 		* mention_url.csv
 
+```python
+  python code/save_mentions.py
+```
+
+This script will take a longer time to complete (~9h, depending the machine/internet connection), as it checks that the mention URLs are valid.
+
 2. Run the script **[mentions_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/mentions_to_qid.py)** 
 	* Goal: map mention URL with QID
 	* To run this code, we need:
@@ -277,6 +304,11 @@ If you use another UMLS release, please update the code and the file paths accor
 		* wiki_id_qid.csv (obtained in step B2)
 	* Outputs:
 		* mentions_qids.csv
+
+```python
+  python code/mentions_to_qid.py
+```
+
 3. Run the script **[redirect_mention_urls.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/redirect_mention_urls.py)** 
 	* Goal: solve redirect URLs to correct page IDs
 	* To run this code, we need:
@@ -285,6 +317,11 @@ If you use another UMLS release, please update the code and the file paths accor
 	* Outputs:
 		* mentions_url_including_redirect.csv
 
+```python
+  python code/redirect_mention_urls.py
+```
+
+This script also takes longer to run (~7h), as it will check for redirects for pages by making requests to the Wikipedia API.
 ---
 
 #### Part E - Integrate all the information and generate the final dataset
@@ -301,4 +338,11 @@ If you use another UMLS release, please update the code and the file paths accor
 		* mentions_url_including_redirect.csv (obtained in step D3)
 	* Outputs
 		* WikiMed-DE.json
+    * WikiMed-DE-BEL.json
 
+You can either run the Jupyter notebook interactively or you can convert it to a Python script and run it from the command line, like so:
+
+```python
+  jupyter nbconvert --to python code/generate_Wikimedde.ipynb
+  python code/generate_Wikimedde.py
+```
