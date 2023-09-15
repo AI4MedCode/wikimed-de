@@ -2,6 +2,8 @@ Code for the paper:
 
 [WikiMed-DE: Constructing a Silver-Standard Dataset for German Biomedical Entity Linking using Wikipedia and Wikidata](https://openreview.net/forum?id=5dQ7YDSYya). 2023. Yi Wang, Corina Dima, Steffen Staab. Wikidata workshop @ ISWC 2023.
 
+You can download the WikiMed-DE dataset from https://doi.org/10.5281/zenodo.8188966.
+
 WikiMed-DE is a silver standard German biomedical entity linking dataset. It was created automatically by connecting the links in German Wikipedia articles to Wikidata and through Wikidata to the Unified Medical Language System (UMLS), the Medical Subject Headings (MeSH) and the Disease Ontology (DO). 
 
 Every sample in WikiMed-DE is associated to its unique Wikipedia page ID and the corresponding url, title and text as well as structured information mapped from Wikidata, namely the QID, the UMLS CUI, the UMLS TUI, the UMLS semantic type, the MeSH ID and the DOID. 
@@ -130,7 +132,7 @@ WikiMed-DE is provided in a JSON format, one document per line. Here is a sample
 
 ### Prerequisites
 
-The code is written in [Python](https://www.python.org) and was tested on Python version 3.8.2. 
+The code is written in [Python](https://www.python.org) and was tested on Python version 3.10.9. 
 
 Use `pip install -r requirements.txt` to install the required packages.
 
@@ -140,7 +142,7 @@ To recreate the dataset you need access to the UMLS. You can obtain a license fr
 
 ### WikiMed-DE versions
 
-WikiMed-DE version 1.0 uses the wikidata dumps from 20.06.2023 and the UMLS version 2023AA. 
+WikiMed-DE version 1.0 uses the Wikipedia dumps from 20.06.2023, the UMLS release 2023AA and the June 2023 release of the Disease Ontology. 
 
 ---
 
@@ -216,8 +218,8 @@ For reproducibility, we provide the results of these queries use to generate the
 		* qid_cui_tui.csv
 
 ```python
-  python code/preprocessing/CUI_TUI.py
-  ```
+python code/preprocessing/CUI_TUI.py
+```
 
 If you use another UMLS release, please update the file paths accordingly.
 
@@ -233,13 +235,13 @@ If you use another UMLS release, please update the file paths accordingly.
 		* qid_mesh.csv
 
 ```python
-  python code/preprocessing/mesh_cui.py
-  ```
+python code/preprocessing/mesh_cui.py
+```
 
 5. Run the script **[preprocessing/DOID_CUI.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/preprocessing/DOID_CUI.py)** 
 	* Goal: map DOIDs to UMLS CUIs. 
 	* To run this code, we need:
-		* **[doid.json](https://github.com/DiseaseOntology/HumanDiseaseOntology/blob/main/src/ontology/releases/doid.json)**. Place this file in the `data` directory. We used the release June 2023 for generating the dataset.
+		* **[doid.json](https://github.com/DiseaseOntology/HumanDiseaseOntology/blob/main/src/ontology/releases/doid.json)**, from the Disease Ontology. Place this file in the `data` directory. We used the DO release June 2023 for generating the dataset.
 		* wikidata_DOID.csv (obtained in step B1)
 		* cui_tui.csv (obtained in step B3)
 	* Outputs:
@@ -248,7 +250,7 @@ If you use another UMLS release, please update the file paths accordingly.
 		* qid_doid.csv
 
 ```python
-  python code/preprocessing/DOID_CUI.py
+python code/preprocessing/DOID_CUI.py
 ```
 ---
 
@@ -266,7 +268,7 @@ If you use another UMLS release, please update the file paths accordingly.
 		* multistream_only_cui_mesh_doid.json
 
 ```python
-  python code/generate_initial_data.py
+python code/generate_initial_data.py
 ```
 
 2. Run the script **[filtering_initial_data.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/filtering_initial_data.py)** 
@@ -277,14 +279,14 @@ If you use another UMLS release, please update the file paths accordingly.
 		* multistream_text.json
 
 ```python
-  python code/filtering_initial_data.py
+python code/filtering_initial_data.py
 ```
 
 --- 
 #### Part D - Map mentions to Wikidata
 
 1. Run the script **[save_mentions.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/save_mentions.py)** 
-	* Goal: saves all mentions appearing in German Wikipedia articles and maps mention URLs with Wikipedia page IDs
+	* Goal: saves all mentions appearing in German Wikipedia articles and maps mention URLs to Wikipedia page IDs
 	* To run this code, we need:
 		* multistream_text.json (obtained in step C2)
 	* Outputs
@@ -292,13 +294,13 @@ If you use another UMLS release, please update the file paths accordingly.
 		* mention_url.csv
 
 ```python
-  python code/save_mentions.py
+python code/save_mentions.py
 ```
 
 This script will take a longer time to complete (~9h, depending the machine/internet connection), as it checks that the mention URLs are valid.
 
 2. Run the script **[mentions_to_qid.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/mentions_to_qid.py)** 
-	* Goal: map mention URL with QID
+	* Goal: map mention URL to QID
 	* To run this code, we need:
 		* mention_url.csv (obtained in step D1)
 		* wiki_id_qid.csv (obtained in step B2)
@@ -306,11 +308,11 @@ This script will take a longer time to complete (~9h, depending the machine/inte
 		* mentions_qids.csv
 
 ```python
-  python code/mentions_to_qid.py
+python code/mentions_to_qid.py
 ```
 
 3. Run the script **[redirect_mention_urls.py](https://github.com/AI4MedCode/wikimed-de/blob/main/code/redirect_mention_urls.py)** 
-	* Goal: solve redirect URLs to correct page IDs
+	* Goal: solve redirect URLs to the correct page IDs
 	* To run this code, we need:
 		* mention_url.csv (obtained in step D1)
 		* wiki_id_qid.csv (obtained in step B2)
@@ -318,10 +320,11 @@ This script will take a longer time to complete (~9h, depending the machine/inte
 		* mentions_url_including_redirect.csv
 
 ```python
-  python code/redirect_mention_urls.py
+python code/redirect_mention_urls.py
 ```
 
 This script also takes longer to run (~7h), as it will check for redirects for pages by making requests to the Wikipedia API.
+
 ---
 
 #### Part E - Integrate all the information and generate the final dataset
@@ -343,6 +346,6 @@ This script also takes longer to run (~7h), as it will check for redirects for p
 You can either run the Jupyter notebook interactively or you can convert it to a Python script and run it from the command line, like so:
 
 ```python
-  jupyter nbconvert --to python code/generate_Wikimedde.ipynb
-  python code/generate_Wikimedde.py
+jupyter nbconvert --to python code/generate_Wikimedde.ipynb
+python code/generate_Wikimedde.py
 ```
