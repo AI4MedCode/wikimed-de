@@ -1,8 +1,10 @@
 data/text/*
 data/dewiki*
 data/2023AA/*
+data/doid.json
 outputs/*
 .python-version
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
